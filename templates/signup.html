@@ -8,13 +8,16 @@
     </head>
 
     <body>
+
         <div class="container">
             <h1>Signup</h1>
             <form action="/register" method="post">
                 <input name="name" autocomplete="off" autofocus placeholder="Name" type="text" required>
                 <input name="email" autocomplete="off" placeholder="Email" type="email" required>
                 <input name="password" autocomplete="off" placeholder="Password" type="password" required>
-                
+                <img src="{{ url_for('static', filename='images/icons8-closed-eye-50.png') }}">
+                <img src="{{ url_for('static', filename='images/icons8-eye-48.png') }}">
+
                 <button type="submit">Register</button>
             </form>
         </div>

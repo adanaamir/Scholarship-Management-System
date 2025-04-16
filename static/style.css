@@ -7,6 +7,8 @@ body{
     text-align: center;
     background-color: burlywood;
     margin: 0;
+    height: 1300px;
+    overflow: scroll; 
 }
 
 .container {
@@ -14,12 +16,32 @@ body{
     flex-direction: column;
     gap: 15px;
     align-items: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin: auto;
+    margin-top: 100px;
+    background-color: #deb887;
+    padding: 30px;
 }
+
+img{
+    position: relative;
+    top: 100px;
+    left: 500px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+}
+
 
 h1{
     position: relative;
     color: brown;
-    top: -100px;
+    top: -20px;
     text-align: center;
 }
 
