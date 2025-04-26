@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from datetime import date
 
@@ -37,7 +37,11 @@ def register():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect("/")
+    return redirect(url_for('show_form'))
+
+@app.route("/form")
+def show_form():
+    return render_template("form.html")
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
