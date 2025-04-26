@@ -41,7 +41,27 @@ def register():
 
 @app.route("/form")
 def show_form():
-    return render_template("form.html")
+    Program = [
+        "Computer Science",
+        "Artificial Intelligence",
+        "Software Engineering",
+        "CyberSecurity",
+        "Mechanical Engineering",
+        "Electrical Engineering",
+        "Civil Engineering", 
+        "Computer Engineering",
+        "Engineering Sciences",
+        "Material Science & Chemical Engineering",
+        "School of Management Sciences"
+        ]
+    Semester = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th" , "8th"]
+    
+    Department = ["FCSE", "FES", "FEE", "FME", "MGS", "FMCE"]
+    
+    Month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    Year = list(range(1980, 2025))
+    
+    return render_template("form.html", Semester=Semester, Program=Program, Department=Department, Month=Month, Year=Year)
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 

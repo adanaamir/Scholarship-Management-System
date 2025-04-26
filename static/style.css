@@ -1,11 +1,12 @@
 body {
     height: 100vh; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
     font-family: 'Times New Roman', Times, serif;
-    text-align: center;
+    /* text-align: center; */
     background-color: burlywood;
+    overflow-y: auto;
     margin: 0;
 }
 
@@ -72,4 +73,21 @@ button {
 }
 button:hover {
     background-color: rgb(61, 37, 22);
+}
+
+.scholarship_form {
+    width: 70%;
+    margin: 40px auto; /* center the whole form box horizontally */
+    padding: 20px;
+    background-color: #deb887;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left; /* important */
+    align-items: flex-start; /* important */
 }

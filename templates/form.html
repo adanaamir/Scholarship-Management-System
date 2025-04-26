@@ -19,16 +19,58 @@
             <input name="reg_no" autocomplete="off" autofocus placeholder="Enter your registeration number" type="text" required>
         <label for="">CNIC/B-form Number</label>
             <input name="nic" autocomplete="off" autofocus placeholder="Enter your CNIC/B-form Number" type="text" required>
-        <label for="">Date Of Birth</label> <!--drop down -->
-            <input name="dob" autocomplete="off" autofocus placeholder="Enter your Date Of Birth" type="text" required>
         
-            <h2>ACADEMIC DETAILS</h2> 
-        <label for="">Current Semester</label>  <!--drop down -->  
-            <input name="curr_sem" autocomplete="off" autofocus placeholder="Enter your Current Semester" type="text" required>
-        <label for="">Program/Degree</label> <!--drop down -->
-            <input name="deg" autocomplete="off" autofocus placeholder="Enter your Degree" type="text" required>
-        <label for="">Department</label>   <!--drop down -->
-            <input name="dep" autocomplete="off" autofocus placeholder="Enter your Department" type="text" required>
+        <!-- //  -->
+        <label for="">Date Of Birth</label>
+        <select name="dob_day" required>
+            <option disabled selected value="">Day</option>
+            {% for day in range(1, 32) %}
+                <option value="{{ day }}">{{ day }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="month" required>
+            <option disabled selected value="">Month</option>
+            {% for month in Month %}
+                <option value="{{ month }}">{{ month }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="year" required>
+            <option disabled selected value="">Year</option>
+            {% for year in Year %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- //  -->
+        
+        <h2>ACADEMIC DETAILS</h2> 
+        <label for="Semester">Current Semester</label>
+        <select name="Semester" required>
+            <option disabled selected value="">Semester</option>
+            {% for semester in Semester %}
+            <option value="{{ semester }}"> {{ semester }}</option>
+            {% endfor %}
+        </select>
+            
+        <label for="Program">Program/Degree</label>
+        <select name="Program" required>
+            <option disabled selected value="">Program</option>
+            {% for program in Program %}
+            <option value="{{ program }}"> {{ program }}</option>
+            {% endfor %}
+        </select>
+
+
+        <label for="Department">Department</label>
+        <select name="Department" required>
+            <option disabled selected value="">Department</option>
+            {% for department in Department %}
+            <option value="{{ department }}"> {{ department }}</option>
+            {% endfor %}
+        </select>
+
         <label for="">Current Semester GPA</label>   
             <input name="curr_gpa" autocomplete="off" autofocus placeholder="Enter your current GPA" type="text" required>
         <label for="">CGPA</label>
