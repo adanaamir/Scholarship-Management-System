@@ -29,7 +29,7 @@ form {
 }
 
 h1 {
-    color: brown;
+    color: rgb(38, 40, 131);
     text-align: center;
     margin-bottom: 20px;
 }
@@ -76,10 +76,10 @@ button:hover {
 }
 
 .scholarship_form {
-    width: 70%;
-    margin: 40px auto; /* center the whole form box horizontally */
+    width: 80%;
+    margin: 40px auto; 
     padding: 20px;
-    background-color: #deb887;
+    background-color: #ded7cf;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
@@ -88,6 +88,31 @@ form {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    text-align: left; /* important */
-    align-items: flex-start; /* important */
+    text-align: left; 
+    align-items: flex-start; 
+}
+
+select {
+    width: 100px; 
+    padding: 5px;
+    border-radius: 5px;
+}
+label {
+    font-size: 18px;    
+}
+
+.form-group {
+    display: flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    width: 200px; 
+}
+
+.scholarship_form button {
+    align-self: center;
+    margin-top: 20px; 
 }

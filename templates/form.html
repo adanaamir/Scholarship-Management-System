@@ -8,19 +8,19 @@
 
 <body>
     <div class="scholarship_form">
-        <h1>Scholarship Registeration Form</h1>
+        <h1>SCHOLARSHIP REGISTERATION FORM</h1>
         <h2>STUDENT DETAILS</h2>
         <form action="#" method="post">
         <label for="">Full Name</label>
             <input name="name" autocomplete="off" autofocus placeholder="Enter your Name" type="text" required>
         <label for="">Student Email</label>
             <input name="email" autocomplete="off" autofocus placeholder="Enter your Email" type="email" required>
-        <label for="">Registeration Number</label>
-            <input name="reg_no" autocomplete="off" autofocus placeholder="Enter your registeration number" type="text" required>
+        <label for="">Registration Number</label>
+            <input name="reg_no" autocomplete="off" autofocus placeholder="Enter your registration number" type="text" required>
         <label for="">CNIC/B-form Number</label>
             <input name="nic" autocomplete="off" autofocus placeholder="Enter your CNIC/B-form Number" type="text" required>
-        
-        <!-- //  -->
+
+    <div class="form-group">
         <label for="">Date Of Birth</label>
         <select name="dob_day" required>
             <option disabled selected value="">Day</option>
@@ -42,18 +42,20 @@
                 <option value="{{ year }}">{{ year }}</option>
             {% endfor %}
         </select>
-
-        <!-- //  -->
-        
-        <h2>ACADEMIC DETAILS</h2> 
-        <label for="Semester">Current Semester</label>
+    </div>
+    <div class="form-group">
+        <h2>ACADEMIC DETAILS</h2>
+    </div>
+    <div class="form-group">
+        <label for="Semester">Current Semester</label><br>    
         <select name="Semester" required>
             <option disabled selected value="">Semester</option>
             {% for semester in Semester %}
             <option value="{{ semester }}"> {{ semester }}</option>
             {% endfor %}
         </select>
-            
+    </div>
+    <div class="form-group">   
         <label for="Program">Program/Degree</label>
         <select name="Program" required>
             <option disabled selected value="">Program</option>
@@ -61,8 +63,8 @@
             <option value="{{ program }}"> {{ program }}</option>
             {% endfor %}
         </select>
-
-
+    </div>    
+    <div class="form-group">
         <label for="Department">Department</label>
         <select name="Department" required>
             <option disabled selected value="">Department</option>
@@ -70,13 +72,14 @@
             <option value="{{ department }}"> {{ department }}</option>
             {% endfor %}
         </select>
+    </div>
 
         <label for="">Current Semester GPA</label>   
-            <input name="curr_gpa" autocomplete="off" autofocus placeholder="Enter your current GPA" type="text" required>
+            <input name="curr_gpa" autocomplete="off" autofocus placeholder="Enter your current GPA" type="number" required>
         <label for="">CGPA</label>
-            <input name="curr_cgpa" autocomplete="off" autofocus placeholder="Enter your CGPA" type="text" required>
+            <input name="curr_cgpa" autocomplete="off" autofocus placeholder="Enter your CGPA" type="number" required>
         <label for="">Previous GPA's</label> <!-- drop down-->
-            <input name="prev_gpa" autocomplete="off" autofocus placeholder="GPA" type="text" required>
+            <input name="prev_gpa" autocomplete="off" autofocus placeholder="GPA" type="number" required>
         
         <h2>PERSONAL DETAILS</h2> 
         <label for="">Home Address</label>   
@@ -89,17 +92,24 @@
             <input name="guardian's_contact" autocomplete="off" autofocus placeholder="Enter your Enter your Guardian's Contact Number" type="text" required>
         <label for="">Relation with Guardian</label>
             <input name="relation" autocomplete="off" autofocus placeholder="Enter your Relation with Guardian" type="text" required>
-            <!-- have an option for selecting number of family members or writing them -->
         
-        <!-- <h2>JUSTIFICATION</h2>
-            <input name="name" autocomplete="off" autofocus placeholder="Income" type="text" required>
-            <input name="name" autocomplete="off" autofocus placeholder="Phone Number" type="text" required>
-            <input name="name" autocomplete="off" autofocus placeholder="Earnings" type="text" required>
-            <input name="name" autocomplete="off" autofocus placeholder="Contact Number" type="text" required>
-            <input name="name" autocomplete="off" autofocus placeholder="Relation" type="text" required> -->
-        
-        </form>
+        <h2>SCHOLARSHIP JUSTIFICATION</h2>
+        <label for="yesNo">Have you applied for any other Scholarships?</label>
+        <select name="yesNo" required>
+            <option disabled selected value="">Yes</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
 
+        <!-- <label for="Docs">Attach Supporting Documents</label>
+        <select name="Docs" required>
+            <option disabled selected value="">Yes</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select> -->
+        
+    <button type="submit">Submit</button>    
+        </form>
     </div>
 </body>
 
