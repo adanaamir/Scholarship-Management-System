@@ -117,11 +117,14 @@ label {
     margin-top: 20px; 
 }
 
-.dashboard{
+.dashboard-icon{
     font-size: 30px;
     cursor: pointer;
     padding: 20px;
     padding-top: 0px;
+    margin-left: 880px;
+    position: fixed;  
+    top: 40px; 
 }
 
 .sidebar{
@@ -129,7 +132,7 @@ label {
     height: 100%;
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
     background-color: #151210;
     overflow-x: hidden;
     transition: 0.3s;
@@ -160,6 +163,20 @@ label {
     font-size: 20px;
 }
 
+.welcome-text{
+    margin-left: 70px;
+}
+
+.welcome-text h2{
+    font-size: 29px;
+    margin-left: 0;
+}
+
+.welcome-text p{
+    font-size: 20px;
+    margin: 0;
+}
+
 .profile-pic{
     margin-right: 20px;
     width: 120px;
@@ -173,8 +190,8 @@ label {
 .profileImage{
     display: flex;
     align-items: center;
-    margin-top: 20px;
-    margin-left: 350px;
+    margin-top: 50px;
+    margin-left: 70px;
     width: 400px;
     padding: 20px;
     background-color: rgb(220, 225, 237);
@@ -183,7 +200,7 @@ label {
 }
 
 .profileInfo h2{
-    margin: 5px 0;
+    margin: 10px 0;
     font-size: 24px;
     color: black;
 }
@@ -195,7 +212,7 @@ label {
     background-color: rgb(220, 225, 237);
     border-radius: 15px;
     margin-top: -167px;
-    margin-left: 850px;
+    margin-left: 580px;
     font-size: 18px;
     color: black;
 }
