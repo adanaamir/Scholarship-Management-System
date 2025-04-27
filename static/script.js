@@ -15,3 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
         eyeOpen.style.display = "inline";
     });
 });
+
+function toggleSelectBar() {
+    var sidebar = document.getElementById("sidebar");
+    if (sidebar.style.width == "250px"){
+        sidebar.style.width = "0";  //hide the sidebar
+    } else {
+        sidebar.style.width = "250px";  //show it
+    }
+}

@@ -5,7 +5,7 @@ body {
     /* align-items: center; */
     font-family: 'Times New Roman', Times, serif;
     /* text-align: center; */
-    background-color: burlywood;
+    background-color: rgb(254, 254, 254);
     overflow-y: auto;
     margin: 0;
 }
@@ -17,7 +17,7 @@ body {
     align-items: center;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    background-color: #deb887;
+    background-color: #f0f0f0;
     padding: 47px;
 }
 
@@ -29,7 +29,7 @@ form {
 }
 
 h1 {
-    color: rgb(38, 40, 131);
+    color: rgb(0, 0, 0);
     text-align: center;
     margin-bottom: 20px;
 }
@@ -62,7 +62,7 @@ input {
 }
 
 button {
-    background-color: #af7d60;
+    background-color: #b4ada9;
     color: white;
     padding: 15px 32px;
     font-size: 16px;
@@ -115,4 +115,91 @@ label {
 .scholarship_form button {
     align-self: center;
     margin-top: 20px; 
+}
+
+.dashboard{
+    font-size: 30px;
+    cursor: pointer;
+    padding: 20px;
+    padding-top: 0px;
+}
+
+.sidebar{
+    width: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #151210;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 100px;
+
+}
+
+.sidebar ul li{
+    padding: 10px 20px;
+}
+
+.sidebar ul{
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li a{
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul li a:hover{
+    background-color: rgb(36, 35, 33);
+}
+
+.sidebar li{
+    font-size: 20px;
+}
+
+.profile-pic{
+    margin-right: 20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #000000;
+    
+}
+
+.profileImage{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 350px;
+    width: 400px;
+    padding: 20px;
+    background-color: rgb(220, 225, 237);
+    box-shadow:0 4px 8px #000000;
+    border-radius: 15px;   
+}
+
+.profileInfo h2{
+    margin: 5px 0;
+    font-size: 24px;
+    color: black;
+}
+
+.sc-status{
+    width: 340px;
+    padding: 18px;
+    box-shadow: 0 4px 8px black;
+    background-color: rgb(220, 225, 237);
+    border-radius: 15px;
+    margin-top: -167px;
+    margin-left: 850px;
+    font-size: 18px;
+    color: black;
+}
+
+.sc-status h2 a{
+    color: rgb(235, 235, 39);
 }

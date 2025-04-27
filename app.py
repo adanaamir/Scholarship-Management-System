@@ -63,6 +63,10 @@ def show_form():
     
     return render_template("form.html", Semester=Semester, Program=Program, Department=Department, Month=Month, Year=Year)
 
+@app.route("/student_dashboard")
+def student_dashboard():
+    return render_template("student_dashboard.html")
+
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 if __name__ == "__main__":

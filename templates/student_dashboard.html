@@ -4,10 +4,41 @@
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <title>Registeration</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 
 <body>
-    
+    <h1>WELCOME TO THE DASHBOARD ADAN!</h1>
+    <body>
+        <div class="dashboard" onclick="toggleSelectBar()">
+        ☰
+        </div>
+
+        <div class="sidebar" id="sidebar">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">View Application</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+        <div class= "profileImage">
+            <img src="{{ url_for('static', filename='images/download.jpg') }}" alt="Profile Picture" class="profile-pic">
+            <div class="profileInfo">
+                <h2>ADAN AAMIR</h2>
+                <h2>2023057</h2>
+            </div>
+        </div>
+        <div class= "sc-status">
+            <h2>SCHOLARSHIP STATUS</h2>
+            <h2><a>PENDING</a></h2>
+        </div>
+        <div class="announce">
+            <h2>ANNOUNCEMENTS</h2>
+            <p>New Scholarship Open! Click to View</p>
+        </div>
+    </body>
 </body>
 
 </html>
