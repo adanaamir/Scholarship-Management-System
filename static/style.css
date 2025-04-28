@@ -220,3 +220,26 @@ label {
 .sc-status h2 a{
     color: rgb(235, 235, 39);
 }
+
+.announce {
+    align-items: center;
+    margin-top: 60px;
+    margin-left: 70px;
+    width: 400px;
+    padding: 20px;
+    background-color: rgb(220, 225, 237);
+    box-shadow:0 4px 8px #000000;
+    border-radius: 15px; 
+}
+
+.financial-aid{
+    width: 320px;
+    padding: 30px;
+    box-shadow: 0 4px 8px black;
+    background-color: rgb(220, 225, 237);
+    border-radius: 15px;
+    margin-top: -140px;
+    margin-left: 580px;
+    font-size: 18px;
+    color: black;
+}
