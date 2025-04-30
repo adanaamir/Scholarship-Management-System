@@ -1,49 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="initial-scale=1, width=device-width">
-    <title>Registeration</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <title>Student Dashboard</title>
+  <style>
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0; left: -250px;
+      width: 250px; height: 100vh;
+      background: #222;
+      color: #fff;
+      transition: left 0.3s ease;
+      padding-top: 60px;
+      z-index: 1000;
+    }
+    #sidebar.active { left: 0; }
+    #sidebar ul { list-style:none; }
+    #sidebar ul li { border-bottom:1px solid #333; }
+    #sidebar ul li a {
+      display:block; padding:15px 20px;
+      color:#fff; text-decoration:none;
+      font-size:16px;
+    }
+    #sidebar ul li a:hover {
+      background: #444;
+    }
+
+    /* Main wrapper, shifts when sidebar opens */
+    #main {
+      transition: margin-left 0.3s ease;
+      margin-left: 0;
+    }
+    #main.shifted { margin-left: 250px; }
+
+    /* Toggle button */
+    .toggle-btn {
+      position: fixed;
+      top: 20px; left: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1100;
+      color: #333;
+    }
+
+    /* Content area */
+    .content {
+      max-width: 800px;
+      margin: 80px auto 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      padding: 0 20px;
+    }
+
+    /* Card style */
+    .card {
+      background: #e3eaf3;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+    .card h2 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .card p, .card a {
+      color: #333;
+      font-size: 16px;
+    }
+    .card a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Profile card inner */
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .profile-pic {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 15px;
+      border: 3px solid #007bff;
+    }
+
+    /* Review letter box */
+    .review-letter {
+      background: #f1f1f1;
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: left;
+    }
+
+    @media(max-width:600px){
+      .toggle-btn { left:10px; }
+      .content { margin-top: 60px; gap:20px; }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="welcome-text">
-        <h2>Dashboard</h2>
-        <p>_________________________________________________________________________________________</p>
-    </div>
-    
-    <div class="dashboard-icon" onclick="toggleSelectBar()">
-        ☰
-    </div>
 
-    <div class="sidebar" id="sidebar">
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">View Application</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Logout</a></li>
-        </ul>
-    </div>
-    <div class= "profileImage">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <ul>
+      <li><a href="/student_dashboard">Home</a></li>
+      <li><a href="#">Profile</a></li>
+      <li><a href="/scholarship_status">View Application</a></li>
+      <li><a href="#">Settings</a></li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Toggle Button -->
+  <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+
+  <!-- Main Content -->
+  <div id="main">
+    <div class="content">
+
+      <!-- Profile Card -->
+      <div class="card profile-card">
         <img src="{{ url_for('static', filename='images/download.jpg') }}" alt="Profile Picture" class="profile-pic">
-        <div class="profileInfo">
-            <h2>ADAN AAMIR</h2>
-            <h2>2023057</h2>
-        </div>
-    </div>
-    <div class= "sc-status">
-        <h2>SCHOLARSHIP STATUS</h2>
-        <h2><a>PENDING</a></h2>
-    </div>
-    <div class="announce">
-        <h2>ANNOUNCEMENTS</h2>
-        <p>New Scholarship Open! Click to View</p>
-    </div>
+        <h2>{{ email }}</h2>
+        <p>ID: {{ session['student_id'] }}</p>
+      </div>
 
-    <div class="financial-aid">
-        <h2>Apply for Financial Aid</h2>
+      <!-- Scholarship Status Card -->
+      <div class="card sc-status">
+        <h2>Scholarship Status</h2>
+        <h3>{{ scholarship_status }}</h3>
+        {% if review_letter %}
+        <div class="review-letter">
+          <strong>Review Letter:</strong>
+          <p>{{ review_letter }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Announcements Card -->
+      <div class="card announce">
+        <h2>Announcements</h2>
+        <p><a href="javascript:void(0)" onclick="showScholarshipDetails()">New Scholarship Open! Click to View</a></p>
+        <div id="merit-scholarship" style="display:none; margin-top:15px;">
+          <h3>Merit-Based Scholarship</h3>
+          <p><a href="/scholarship_form">Click here to apply</a></p>
+        </div>
+      </div>
+
+      <!-- Financial Aid Card -->
+      <div class="card financial-aid">
+        <h2>Financial Aid</h2>
+        <p>If you need financial assistance, please <a href="#">click here</a> to apply.</p>
+      </div>
+
     </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('main').classList.toggle('shifted');
+    }
+    function showScholarshipDetails() {
+      document.getElementById('merit-scholarship').style.display = 'block';
+    }
+  </script>
 </body>
 </html>

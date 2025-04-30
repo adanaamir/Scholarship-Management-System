@@ -370,26 +370,40 @@ def admin_review():
     conn.close()
 
     return render_template('admin_review.html', applications=applications)
-
 @app.route('/create_form', methods=['GET', 'POST'])
 def create_form():
-    if 'user_type' not in session or session['user_type'] != 'admin':
-        return redirect(url_for('login_admin'))
 
     if request.method == 'POST':
+        title = request.form['scholarship_title']
+        description = request.form['scholarship_description']
+        eligibility = request.form['scholarship_eligibility']
+        questions = request.form.getlist('questions[]')
+        question_types = request.form.getlist('question_types[]')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Insert into scholarships
+        cur.execute("""
+            INSERT INTO scholarships (title, description, eligibility_criteria)
+            VALUES (%s, %s, %s) RETURNING id
+        """, (title, description, eligibility))
+        scholarship_id = cur.fetchone()[0]
+
+        # Insert questions
+        for question_text, question_type in zip(questions, question_types):
+            cur.execute("""
+                INSERT INTO questions (scholarship_id, question_text, question_type)
+                VALUES (%s, %s, %s)
+            """, (scholarship_id, question_text, question_type))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
         return redirect(url_for('admin_dashboard'))
 
     return render_template('create_form.html')
-
-@app.route('/open_scholarship', methods=['GET', 'POST'])
-def open_scholarship():
-    if 'user_type' not in session or session['user_type'] != 'admin':
-        return redirect(url_for('login_admin'))
-
-    if request.method == 'POST':
-        return redirect(url_for('admin_dashboard'))
-
-    return render_template('open_scholarship.html')
 
 @app.route('/scholarship_form', methods=['GET', 'POST'])
 def scholarship_form():
@@ -467,37 +481,6 @@ def review_application(app_id):
     conn.close()
 
     return redirect(url_for('admin_review'))
-@app.route('/create_scholarship', methods=['GET', 'POST'])
-def create_scholarship():
-    if request.method == 'POST':
-        scholarship_title = request.form['scholarship_title']
-        scholarship_description = request.form['scholarship_description']
-        scholarship_eligibility = request.form['scholarship_eligibility']
-        questions = request.form.getlist('questions[]')
-        question_types = request.form.getlist('question_types[]')
-
-        # Save scholarship details in the database (assuming you have a table for scholarships)
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('INSERT INTO scholarships (title, description, eligibility, created_at) VALUES (%s, %s, %s, %s)',
-                    (scholarship_title, scholarship_description, scholarship_eligibility, datetime.now()))
-        conn.commit()
-
-        # Get the ID of the newly created scholarship
-        scholarship_id = cur.lastrowid
-
-        # Save questions
-        for question, qtype in zip(questions, question_types):
-            cur.execute('INSERT INTO scholarship_questions (scholarship_id, question, question_type) VALUES (%s, %s, %s)',
-                        (scholarship_id, question, qtype))
-        conn.commit()
-
-        cur.close()
-        conn.close()
-
-        return redirect('/admin_dashboard')
-
-    return render_template('create_form.html')
 @app.route('/logout')
 def logout():
     session.clear()

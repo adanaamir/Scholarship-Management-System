@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard</title>
+  <style>
+    /* Reset */
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0; left: -220px;
+      width: 220px; height: 100vh;
+      background: #2c3e50; color: #fff;
+      transition: left .3s ease;
+      padding-top: 60px;
+    }
+    #sidebar.active { left: 0; }
+    #sidebar ul { list-style:none; }
+    #sidebar ul li a {
+      display:block; padding:15px 20px;
+      color:#fff; text-decoration:none;
+      transition: background .3s;
+    }
+    #sidebar ul li a:hover { background: #34495e; }
+
+    /* Toggle button */
+    .toggle-btn {
+      position: fixed; top:20px; left:20px;
+      font-size:24px; cursor:pointer; color:#333;
+      z-index:1000;
+    }
+
+    /* Main content shifts when sidebar opens */
+    #main {
+      transition: margin-left .3s ease;
+      margin-left: 0;
+    }
+    #main.shifted { margin-left: 220px; }
+
+    /* Centered option cards */
+    .content {
+      max-width: 600px;
+      margin: 100px auto 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #e3eaf3;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+    }
+    .card a {
+      color: #2c3e50; text-decoration:none;
+      font-size:18px; font-weight:600;
+    }
+    .card a:hover { text-decoration:underline; }
+
+    @media(max-width:600px){
+      .content { margin-top: 80px; }
+      .toggle-btn { left:10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- sidebar -->
+  <div id="sidebar">
+    <ul>
+      <li><a href="/admin_dashboard">Home</a></li>
+      <li><a href="{{ url_for('admin_review') }}">Review Applications</a></li>
+      <li><a href="/create_form">Create Form</a></li>
+      <li><a href="/open_scholarship">Open Scholarship</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- toggle -->
+  <div class="toggle-btn" onclick="toggleSidebar()">☰</div>
+
+  <!-- main -->
+  <div id="main">
+    <div class="content">
+      <!-- <div class="card">
+        <a href="/open_scholarship">Open a New Scholarship</a>
+        <p>Create and configure a fresh scholarship offering.</p>
+      </div> -->
+      <div class="card">
+        <a href="/create_form">Create Scholarship Form</a>
+        <p>Build an application form with custom question types.</p>
+      </div>
+      <div class="card">
+        <a href="{{ url_for('admin_review') }}">Review Applications</a>
+        <p>See and decide on student submissions.</p>
+      </div>
+      <div class="card">
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <p>End your session securely.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('main').classList.toggle('shifted');
+    }
+  </script>
+</body>
+</html>

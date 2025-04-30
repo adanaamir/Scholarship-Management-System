@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Scholarship Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 30px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .question-block {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 25px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const questionBlock = document.createElement('div');
+            questionBlock.className = 'question-block';
+            questionBlock.innerHTML = `
+                <label>Question:</label>
+                <input type="text" name="questions[]" required>
+                <label>Type:</label>
+                <select name="question_types[]" required>
+                    <option value="text">Text</option>
+                    <option value="textarea">Textarea</option>
+                    <option value="date">Date</option>
+                    <option value="number">Number</option>
+                </select>
+            `;
+            container.appendChild(questionBlock);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Create a New Scholarship</h2>
+        <form method="post">
+            <label for="scholarship_title">Scholarship Title</label>
+            <input type="text" name="scholarship_title" id="scholarship_title" required>
+
+            <label for="scholarship_description">Description</label>
+            <textarea name="scholarship_description" id="scholarship_description" rows="4" required></textarea>
+
+            <label for="scholarship_eligibility">Eligibility Criteria</label>
+            <textarea name="scholarship_eligibility" id="scholarship_eligibility" rows="3"></textarea>
+
+            <h3>Questions</h3>
+            <div id="questions-container"></div>
+            <button type="button" onclick="addQuestion()">Add Question</button>
+            <br>
+            <button type="submit">Create Scholarship</button>
+        </form>
+    </div>
+</body>
+</html>
