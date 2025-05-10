@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Scholarship Status</title></head>
+<body>
+    <h1>Your Scholarship Applications</h1>
+    {% if applications %}
+        {% for app in applications %}
+        <div style="border:1px solid gray; margin:10px; padding:10px;">
+            <p><strong>Scholarship Type:</strong> {{ app[0] }}</p>
+            <p><strong>Status:</strong> {{ app[1] }}</p>
+            <p><strong>Review Letter:</strong> {{ app[2] }}</p>
+            <p><strong>Applied On:</strong> {{ app[3] }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>You have not applied for any scholarships yet.</p>
+    {% endif %}
+</body>
+</html>

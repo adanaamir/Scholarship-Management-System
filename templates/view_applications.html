@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Applications</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f7f7f7; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+        h1 { text-align: center; }
+        .application {
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .status { font-weight: bold; }
+        .letter { margin-top: 10px; background: #fff; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Scholarship Applications</h1>
+
+        {% for app in applications %}
+        <div class="application">
+            <p><strong>Scholarship Type:</strong> {{ app['scholarship_type'] }}</p>
+            <p><strong>Status:</strong> <span class="status">{{ app['status'] }}</span></p>
+            {% if app['review_letter'] %}
+            <div class="letter">
+                <p><strong>Review Letter:</strong></p>
+                <p>{{ app['review_letter'] }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+    </div>
+</body>
+</html>
