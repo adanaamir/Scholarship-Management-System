@@ -15,6 +15,12 @@ def get_db_connection():
       host="localhost",
       port="5432"
     )
+###
+# ----------------------
+# Home, Registration, Login (unchanged) for commit
+# ----------------------
+#please ho jao
+=======
 
 @app.route('/')
 def home():
@@ -68,6 +74,7 @@ def home():
         <div class="button-container">
             <a href="/login_student">Login as Student</a>
             <a href="/login_admin">Login as Admin</a>
+            <a href="/admin_manage">Manage Admins (Admin Only)</a>
             <a href="/register_student">Register as Student</a>
             <a href="/register_admin">Register as Admin</a>
         </div>
@@ -177,6 +184,105 @@ def register_student():
     </html>
     '''
 
+@app.route('/register_admin', methods=['GET', 'POST'])
+def register_admin():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('INSERT INTO admin (name, email, password, created_at) VALUES (%s, %s, %s, %s)',
+                    (name, email, password, datetime.now().date()))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect('/login_admin')
+    
+    return '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Admin Registration</title>
+      <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .card {
+          background: #fff;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          width: 320px;
+          text-align: center;
+        }
+        .card h1 {
+          margin-bottom: 20px;
+          font-size: 28px;
+          color: #333;
+        }
+        .card input {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 16px;
+        }
+        .card button {
+          width: 100%;
+          padding: 12px;
+          background-color: #007bff;
+          border: none;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 18px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+        .card button:hover {
+          background-color: #0056b3;
+        }
+        .card .home-link {
+          margin-top: 20px;
+          font-size: 14px;
+        }
+        .card .home-link a {
+          color: #007bff;
+          text-decoration: none;
+        }
+        .card .home-link a:hover {
+          text-decoration: underline;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Admin Registration</h1>
+        <form method="post">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <input type="password" name="password" placeholder="Your Password" required>
+          <button type="submit">Register</button>
+        </form>
+        <div class="home-link">
+          <a href="/">← Back to Home</a>
+        </div>
+      </div>
+    </body>
+    </html>
+    '''
+
+=======
 ##
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
@@ -228,6 +334,68 @@ def student_dashboard():
                            scholarship_status=scholarship_status,
                            review_letter=review_letter)
 
+@app.route('/admin_dashboard')
+def admin_dashboard():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login_admin'))
+
+    return render_template('admin_dashboard.html')
+
+@app.route('/admin_review')
+def admin_review():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login_admin'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''
+    SELECT id, name, email, reg_no, program, department, curr_cgpa, status
+    FROM scholarship_applications
+    WHERE status = 'Pending'
+    ORDER BY applied_on DESC
+''')
+
+    applications = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template('admin_review.html', applications=applications)
+@app.route('/create_form', methods=['GET', 'POST'])
+def create_form():
+
+    if request.method == 'POST':
+        title = request.form['scholarship_title']
+        description = request.form['scholarship_description']
+        eligibility = request.form['scholarship_eligibility']
+        questions = request.form.getlist('questions[]')
+        question_types = request.form.getlist('question_types[]')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Insert into scholarships
+        cur.execute("""
+            INSERT INTO scholarships (title, description, eligibility)
+            VALUES (%s, %s, %s) RETURNING id
+        """, (title, description, eligibility))
+        scholarship_id = cur.fetchone()[0]
+
+        # Insert questions
+        for question_text, question_type in zip(questions, question_types):
+            cur.execute("""
+                INSERT INTO questions (scholarship_id, question_text, question_type)
+                VALUES (%s, %s, %s)
+            """, (scholarship_id, question_text, question_type))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('create_form.html')
+
+=======
 ##
 @app.route('/scholarship_form', methods=['GET', 'POST'])
 def scholarship_form():
@@ -525,6 +693,90 @@ def create_form():
 
     return render_template('create_form.html')
 
+    return redirect(url_for('admin_review'))
+
+
+@app.route('/admin_manage', methods=['GET', 'POST'])
+def admin_manage():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    if request.method == 'POST':
+        action = request.form['action']
+
+        # Handle "Delete" action
+        if action == 'delete':
+            selected_admins = request.form.getlist('selected_admins')  # Get the selected admin IDs
+            if selected_admins:
+                for admin_id in selected_admins:
+                    # Backup before deleting
+                    cur.execute(''' 
+                        INSERT INTO admin_backup (id, name, email, password, deleted_at) 
+                        SELECT admin_id, name, email, password, NOW() 
+                        FROM admin 
+                        WHERE admin_id=%s
+                    ''', (admin_id,))
+                    # Delete the admin
+                    cur.execute('DELETE FROM admin WHERE admin_id=%s', (admin_id,))
+        
+        # Handle "Insert" action (new admin insertion)
+        elif action == 'insert':
+            # Get the new admin details from the form
+            name = request.form['name']
+            email = request.form['email']
+            password = request.form['password']
+
+            # Insert the new admin into the database
+            cur.execute('INSERT INTO admin (name, email, password, created_at) VALUES (%s, %s, %s, %s)',
+                        (name, email, password, datetime.now().date()))
+        
+        # Handle "Update" action (update selected admin)
+        elif action == 'update':
+          selected_admins = request.form.getlist('selected_admins')
+          if selected_admins:
+              admin_id = selected_admins[0]
+              name = request.form['name']
+              email = request.form['email']
+              password = request.form['password']
+              cur.execute('UPDATE admin SET name=%s, email=%s, password=%s WHERE admin_id=%s',
+                          (name, email, password, admin_id))
+              conn.commit()
+
+
+        # Handle "Undo" action (restore deleted admin)
+        elif action == 'undo':
+            # Get the latest deleted admin(s) from admin_backup to restore
+            selected_backups = request.form.getlist('selected_backups')
+            for backup_id in selected_backups:
+                # Restore from backup
+                cur.execute('''
+                    INSERT INTO admin (admin_id, name, email, password, created_at) 
+                    SELECT id, name, email, password, NOW() 
+                    FROM admin_backup 
+                    WHERE id = %s
+                ''', (backup_id,))
+                # Delete from backup (undo the delete)
+                cur.execute('DELETE FROM admin_backup WHERE id = %s', (backup_id,))
+
+
+        conn.commit()
+
+    # Fetch data
+    cur.execute('SELECT * FROM admin ORDER BY admin_id')
+    admins = cur.fetchall()
+    cur.execute('SELECT * FROM admin_backup ORDER BY deleted_at DESC')
+    backups = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('admin_manage.html', admins=admins, backups=backups)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
+=======
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 if __name__ == "__main__":
