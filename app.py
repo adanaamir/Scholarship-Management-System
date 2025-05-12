@@ -71,6 +71,7 @@ def home():
         <div class="button-container">
             <a href="/login_student">Login as Student</a>
             <a href="/login_admin">Login as Admin</a>
+            <a href="/admin_manage">Manage Admins (Admin Only)</a>
             <a href="/register_student">Register as Student</a>
             <a href="/register_admin">Register as Admin</a>
         </div>
@@ -191,7 +192,7 @@ def register_admin():
         cur.close()
         conn.close()
         return redirect('/login_admin')
-
+    
     return '''
     <!DOCTYPE html>
     <html lang="en">
@@ -385,7 +386,7 @@ def create_form():
 
         # Insert into scholarships
         cur.execute("""
-            INSERT INTO scholarships (title, description, eligibility_criteria)
+            INSERT INTO scholarships (title, description, eligibility)
             VALUES (%s, %s, %s) RETURNING id
         """, (title, description, eligibility))
         scholarship_id = cur.fetchone()[0]
@@ -481,6 +482,84 @@ def review_application(app_id):
     conn.close()
 
     return redirect(url_for('admin_review'))
+
+
+@app.route('/admin_manage', methods=['GET', 'POST'])
+def admin_manage():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    if request.method == 'POST':
+        action = request.form['action']
+
+        # Handle "Delete" action
+        if action == 'delete':
+            selected_admins = request.form.getlist('selected_admins')  # Get the selected admin IDs
+            if selected_admins:
+                for admin_id in selected_admins:
+                    # Backup before deleting
+                    cur.execute(''' 
+                        INSERT INTO admin_backup (id, name, email, password, deleted_at) 
+                        SELECT admin_id, name, email, password, NOW() 
+                        FROM admin 
+                        WHERE admin_id=%s
+                    ''', (admin_id,))
+                    # Delete the admin
+                    cur.execute('DELETE FROM admin WHERE admin_id=%s', (admin_id,))
+        
+        # Handle "Insert" action (new admin insertion)
+        elif action == 'insert':
+            # Get the new admin details from the form
+            name = request.form['name']
+            email = request.form['email']
+            password = request.form['password']
+
+            # Insert the new admin into the database
+            cur.execute('INSERT INTO admin (name, email, password, created_at) VALUES (%s, %s, %s, %s)',
+                        (name, email, password, datetime.now().date()))
+        
+        # Handle "Update" action (update selected admin)
+        elif action == 'update':
+          selected_admins = request.form.getlist('selected_admins')
+          if selected_admins:
+              admin_id = selected_admins[0]
+              name = request.form['name']
+              email = request.form['email']
+              password = request.form['password']
+              cur.execute('UPDATE admin SET name=%s, email=%s, password=%s WHERE admin_id=%s',
+                          (name, email, password, admin_id))
+              conn.commit()
+
+
+        # Handle "Undo" action (restore deleted admin)
+        elif action == 'undo':
+            # Get the latest deleted admin(s) from admin_backup to restore
+            selected_backups = request.form.getlist('selected_backups')
+            for backup_id in selected_backups:
+                # Restore from backup
+                cur.execute('''
+                    INSERT INTO admin (admin_id, name, email, password, created_at) 
+                    SELECT id, name, email, password, NOW() 
+                    FROM admin_backup 
+                    WHERE id = %s
+                ''', (backup_id,))
+                # Delete from backup (undo the delete)
+                cur.execute('DELETE FROM admin_backup WHERE id = %s', (backup_id,))
+
+
+        conn.commit()
+
+    # Fetch data
+    cur.execute('SELECT * FROM admin ORDER BY admin_id')
+    admins = cur.fetchall()
+    cur.execute('SELECT * FROM admin_backup ORDER BY deleted_at DESC')
+    backups = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('admin_manage.html', admins=admins, backups=backups)
+
 @app.route('/logout')
 def logout():
     session.clear()
