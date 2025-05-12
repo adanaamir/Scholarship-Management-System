@@ -15,7 +15,7 @@ def get_db_connection():
         host="localhost",
         port="5432"
     )
-
+###
 # ----------------------
 # Home, Registration, Login (unchanged) for commit
 # ----------------------
