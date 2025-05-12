@@ -17,8 +17,9 @@ def get_db_connection():
     )
 
 # ----------------------
-# Home, Registration, Login (unchanged)
+# Home, Registration, Login (unchanged) for commit
 # ----------------------
+#please ho jao
 @app.route('/')
 def home():
     return '''
