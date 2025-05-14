@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import psycopg2
 from datetime import datetime
 import psycopg2.extras
-
+from reportlab.pdfgen import canvas
+import os
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -15,11 +16,7 @@ def get_db_connection():
         host="localhost",
         port="5432"
     )
-###
-# ----------------------
-# Home, Registration, Login (unchanged) for commit
-# ----------------------
-#please ho jao
+
 @app.route('/')
 def home():
     return '''
@@ -68,13 +65,14 @@ def home():
         </style>
     </head>
     <body>
-        <h1>Welcome to the Portal</h1>
+        <h1>Welcome to the Scholarship Management System</h1>
         <div class="button-container">
             <a href="/login_student">Login as Student</a>
             <a href="/login_admin">Login as Admin</a>
-            <a href="/admin_manage">Manage Admins (Admin Only)</a>
             <a href="/register_student">Register as Student</a>
             <a href="/register_admin">Register as Admin</a>
+            <a href="/admin_manage">Manage Admins (Admin Only)</a>
+            <a href="/student_manage">Manage Students (Student Only)</a>
         </div>
     </body>
     </html>
@@ -83,100 +81,22 @@ def home():
 @app.route('/register_student', methods=['GET', 'POST'])
 def register_student():
     if request.method == 'POST':
-        name = request.form['name']
+        student_name = request.form['name']
         email = request.form['email']
-        password = request.form['password']
+        student_pass = request.form['password']
 
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('INSERT INTO Students (name, email, password) VALUES (%s, %s, %s)',
-                    (name, email, password))
+        cur.execute('''
+            INSERT INTO students (student_name, email, student_pass)
+            VALUES (%s, %s, %s)
+        ''', (student_name, email, student_pass))
         conn.commit()
         cur.close()
         conn.close()
-        return redirect('/login_student')
+        return redirect('/login_student')  # You need to implement this route/view
 
-    return '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Student Registration</title>
-      <style>
-        body {
-          background-color: #f8f9fa;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          margin: 0;
-        }
-        .card {
-          background: #fff;
-          padding: 30px;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-          width: 320px;
-          text-align: center;
-        }
-        .card h1 {
-          margin-bottom: 20px;
-          font-size: 28px;
-          color: #333;
-        }
-        .card input {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          font-size: 16px;
-        }
-        .card button {
-          width: 100%;
-          padding: 12px;
-          background-color: #007bff;
-          border: none;
-          border-radius: 5px;
-          color: #fff;
-          font-size: 18px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-        .card button:hover {
-          background-color: #0056b3;
-        }
-        .card .home-link {
-          margin-top: 20px;
-          font-size: 14px;
-        }
-        .card .home-link a {
-          color: #007bff;
-          text-decoration: none;
-        }
-        .card .home-link a:hover {
-          text-decoration: underline;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="card">
-        <h1>Student Registration</h1>
-        <form method="post">
-          <input type="text" name="name" placeholder="Your Name" required>
-          <input type="email" name="email" placeholder="Your Email" required>
-          <input type="password" name="password" placeholder="Your Password" required>
-          <button type="submit">Register</button>
-        </form>
-        <div class="home-link">
-          <a href="/">← Back to Home</a>
-        </div>
-      </div>
-    </body>
-    </html>
-    '''
+    return render_template('register_student.html')
 
 @app.route('/register_admin', methods=['GET', 'POST'])
 def register_admin():
@@ -194,87 +114,8 @@ def register_admin():
         conn.close()
         return redirect('/login_admin')
     
-    return '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Admin Registration</title>
-      <style>
-        body {
-          background-color: #f8f9fa;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          margin: 0;
-        }
-        .card {
-          background: #fff;
-          padding: 30px;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-          width: 320px;
-          text-align: center;
-        }
-        .card h1 {
-          margin-bottom: 20px;
-          font-size: 28px;
-          color: #333;
-        }
-        .card input {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          font-size: 16px;
-        }
-        .card button {
-          width: 100%;
-          padding: 12px;
-          background-color: #007bff;
-          border: none;
-          border-radius: 5px;
-          color: #fff;
-          font-size: 18px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-        .card button:hover {
-          background-color: #0056b3;
-        }
-        .card .home-link {
-          margin-top: 20px;
-          font-size: 14px;
-        }
-        .card .home-link a {
-          color: #007bff;
-          text-decoration: none;
-        }
-        .card .home-link a:hover {
-          text-decoration: underline;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="card">
-        <h1>Admin Registration</h1>
-        <form method="post">
-          <input type="text" name="name" placeholder="Your Name" required>
-          <input type="email" name="email" placeholder="Your Email" required>
-          <input type="password" name="password" placeholder="Your Password" required>
-          <button type="submit">Register</button>
-        </form>
-        <div class="home-link">
-          <a href="/">← Back to Home</a>
-        </div>
-      </div>
-    </body>
-    </html>
-    '''
+    return render_template('register_admin.html')
+
 
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
@@ -284,7 +125,7 @@ def login_student():
 
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute('SELECT * FROM Students WHERE email=%s AND password=%s', (email, password))
+        cur.execute('SELECT * FROM students WHERE email=%s AND student_pass=%s', (email, password))
         student = cur.fetchone()
         cur.close()
         conn.close()
@@ -293,10 +134,10 @@ def login_student():
             session['student_id'] = student[0]
             session['email'] = email
             session['user_type'] = 'student'
-            return redirect('/student_dashboard')
+            return redirect('/student_dashboard')  # This should be a route you define for the dashboard
         else:
             return 'Invalid credentials! Try again.'
-    
+
     return render_template('login_student.html')
 
 @app.route('/login_admin', methods=['GET', 'POST'])
@@ -324,54 +165,77 @@ def login_admin():
 @app.route('/student_dashboard')
 def student_dashboard():
     if 'student_id' not in session:
-        return redirect('/login_student')
+        return redirect(url_for('login_student'))
 
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(''' 
-        SELECT status, review_letter FROM scholarship_applications
-        WHERE student_id = %s ORDER BY applied_on DESC LIMIT 1
-    ''', (session['student_id'],))
-    result = cur.fetchone()
+    student_id = session['student_id']
+
+    # Show scholarships the student has NOT applied to
+    cur.execute("""
+        SELECT s.id, s.title FROM scholarships s
+        WHERE s.id NOT IN (
+            SELECT scholarship_id FROM scholarship_applications WHERE student_id = %s
+        )
+    """, (student_id,))
+    scholarships = cur.fetchall()
+
+    # Show all applications by the student with their current status and review letter
+    cur.execute("""
+        SELECT sa.application_id, sa.status, sa.review_letter, sa.application_date, sa.applied_on, sc.title
+        FROM scholarship_applications sa
+        JOIN scholarships sc ON sa.scholarship_id = sc.id
+        WHERE sa.student_id = %s
+    """, (student_id,))
+    applications = cur.fetchall()
+
+    cur.close()
     conn.close()
 
-    if result:
-        scholarship_status = result[0]
-        review_letter = result[1]
-    else:
-        scholarship_status = 'Pending'
-        review_letter = None
-
-    return render_template('student_dashboard.html', email=session['email'],
-                           scholarship_status=scholarship_status,
-                           review_letter=review_letter)
-
+    return render_template(
+        'student_dashboard.html',
+        scholarships=scholarships,
+        applications=applications,
+        email=session.get('email')
+    )
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if 'user_type' not in session or session['user_type'] != 'admin':
         return redirect(url_for('login_admin'))
-
     return render_template('admin_dashboard.html')
 
-@app.route('/admin_review')
+@app.route('/admin/review', methods=['GET', 'POST'])
 def admin_review():
-    if 'user_type' not in session or session['user_type'] != 'admin':
-        return redirect(url_for('login_admin'))
-
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('''
-    SELECT id, name, email, reg_no, program, department, curr_cgpa, status
-    FROM scholarship_applications
-    WHERE status = 'Pending'
-    ORDER BY applied_on DESC
-''')
 
-    applications = cur.fetchall()
+    if request.method == 'POST':
+        app_id = request.form['app_id']
+        status = request.form['status']
+        comment = request.form['comment']
+
+        cur.execute("""
+            UPDATE scholarship_applications
+            SET status = %s, review_letter = %s
+            WHERE application_id = %s
+        """, (status, comment, app_id))
+        conn.commit()
+
+    # DO NOT insert a new application here
+    # Just fetch pending or null-status applications
+    cur.execute("""
+    SELECT application_id, student_id, scholarship_id, status, review_letter, application_date, applied_on, application_pdf
+    FROM scholarship_applications
+    WHERE status IS NULL OR status = 'Pending'
+""")
+
+    scholarship_applications = cur.fetchall()
+
     cur.close()
     conn.close()
 
-    return render_template('admin_review.html', applications=applications)
+    return render_template('admin_review.html', scholarship_applications=scholarship_applications)
+
 @app.route('/create_form', methods=['GET', 'POST'])
 def create_form():
 
@@ -407,61 +271,77 @@ def create_form():
 
     return render_template('create_form.html')
 
-@app.route('/scholarship_form', methods=['GET', 'POST'])
-def scholarship_form():
+@app.route('/apply/<int:scholarship_id>', methods=['GET', 'POST'])
+def apply_scholarship(scholarship_id):
+    if 'student_id' not in session:
+        return redirect(url_for('login_student'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    student_id = session['student_id']
+
     if request.method == 'POST':
-        # Extracting the form data
-        name = request.form['name']
-        email = request.form['email']
-        reg_no = request.form['reg_no']
-        nic = request.form['nic']
-        dob_day = int(request.form['dob_day'])
-        
-        # Map the month name to its integer value
-        month_map = {
-            'January': 1, 'February': 2, 'March': 3, 'April': 4,
-            'May': 5, 'June': 6, 'July': 7, 'August': 8,
-            'September': 9, 'October': 10, 'November': 11, 'December': 12
-        }
-        dob_month_str = request.form['month']
-        dob_month = month_map[dob_month_str]  # Convert month name to month number
-        dob_year = int(request.form['year'])
+        answers = request.form.getlist('answers[]')
 
-        # Create the dob in the required format
-        dob = f"{dob_year}-{dob_month:02d}-{dob_day:02d}"
+        # Insert application and get the application_id
+        cur.execute("""
+            INSERT INTO scholarship_applications (student_id, scholarship_id, applied_on, status)
+            VALUES (%s, %s, NOW(), 'Pending')
+            RETURNING application_id
+        """, (student_id, scholarship_id))
+        application_id = cur.fetchone()[0]
 
-        # Print the form data to debug
-        print(request.form)
+        # Get related question IDs
+        cur.execute("SELECT id FROM questions WHERE scholarship_id = %s ORDER BY id", (scholarship_id,))
+        question_ids = [row[0] for row in cur.fetchall()]
 
-        conn = get_db_connection()
-        cur = conn.cursor()
+        # Store answers
+        for question_id, answer in zip(question_ids, answers):
+            cur.execute("""
+                INSERT INTO answers (student_id, scholarship_id, question_id, answer_text)
+                VALUES (%s, %s, %s, %s)
+            """, (student_id, scholarship_id, question_id, answer))
 
-        # Ensure that all form data exists (use .get() for optional fields)
-        cur.execute('''
-            INSERT INTO scholarship_applications (student_id, scholarship_type, name, email, reg_no, nic, dob, semester, program, department, curr_gpa, curr_cgpa, prev_gpa, address, phone_number, guardian_name, guardian_contact, relation, has_other_scholarship, status, applied_on)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
-        ''', (
-            session['student_id'], 'Merit Based', name, email, reg_no, nic, dob,
-            request.form.get('Semester', ''), request.form.get('Program', ''), request.form.get('Department', ''), 
-            request.form.get('curr_gpa', None), request.form.get('curr_cgpa', None),
-            request.form.get('prev_gpa', None), request.form.get('address', ''), request.form.get('phone_number', ''),
-            request.form.get("guardian's_name", ''), request.form.get("guardian's_contact", ''),
-            request.form.get('relation', ''), request.form.get('yesNo', ''), 'Pending'
-        ))
+        # ✅ Generate and save PDF
+        pdf_filename = f"{student_id}_{application_id}.pdf"
+        pdf_path = os.path.join('static', 'applications', pdf_filename)
+        os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+        c = canvas.Canvas(pdf_path)
+        c.drawString(100, 800, f"Student ID: {student_id}")
+        c.drawString(100, 780, f"Scholarship ID: {scholarship_id}")
+        c.drawString(100, 760, "Answers:")
+        y = 740
+        for i, answer in enumerate(answers):
+            c.drawString(120, y, f"Q{i+1}: {answer}")
+            y -= 20
+            if y < 50:  # Move to next page if content is too long
+                c.showPage()
+                y = 800
+        c.save()
+
+        # ✅ Store PDF path in DB
+        cur.execute("""
+            UPDATE scholarship_applications
+            SET application_pdf = %s
+            WHERE application_id = %s
+        """, (pdf_filename, application_id))
 
         conn.commit()
+        cur.close()
         conn.close()
 
-        return redirect(url_for('student_dashboard'))  # Redirect to the student dashboard
+        return redirect(url_for('student_dashboard'))
 
-    # Data to populate the form fields (for dropdowns)
-    Month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    Year = list(range(1990, datetime.now().year + 1))
-    Semester = [f"Semester {i}" for i in range(1, 9)]
-    Program = ["BS Computer Science", "BS Mathematics", "BBA", "MBA", "Electrical Engineering"]
-    Department = ["CS", "Math", "Business", "Electrical"]
+    cur.execute("SELECT title, description, eligibility FROM scholarships WHERE id = %s", (scholarship_id,))
+    scholarship = cur.fetchone()
 
-    return render_template('scholarship_form.html', Month=Month, Year=Year, Semester=Semester, Program=Program, Department=Department)
+    cur.execute("SELECT id, question_text, question_type FROM questions WHERE scholarship_id = %s", (scholarship_id,))
+    questions = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('apply_form.html', scholarship=scholarship, questions=questions)
 
 @app.route('/review_application/<int:app_id>', methods=['POST'])
 def review_application(app_id):
@@ -476,14 +356,54 @@ def review_application(app_id):
     cur.execute('''
         UPDATE scholarship_applications
         SET status=%s, review_letter=%s
-        WHERE id=%s
+        WHERE application_id=%s
     ''', (decision, review_letter, app_id))
     conn.commit()
     cur.close()
     conn.close()
 
     return redirect(url_for('admin_review'))
+@app.route('/admin/delete_scholarship/<int:scholarship_id>', methods=['POST'])
+def delete_scholarship(scholarship_id):
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login_admin'))
 
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Check if the scholarship exists
+    cur.execute('SELECT * FROM scholarships WHERE id = %s', (scholarship_id,))
+    scholarship = cur.fetchone()
+
+    if scholarship:
+        # Delete related applications from scholarship_applications table
+        cur.execute('DELETE FROM scholarship_applications WHERE scholarship_id = %s', (scholarship_id,))
+
+        # Delete the scholarship itself
+        cur.execute('DELETE FROM scholarships WHERE id = %s', (scholarship_id,))
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return redirect('/admin_dashboard')  # Redirect to admin dashboard after deletion
+    else:
+        cur.close()
+        conn.close()
+        return 'Scholarship not found.'
+@app.route('/manage_scholarships')
+def manage_scholarships():
+    if 'user_type' not in session or session['user_type'] != 'admin':
+        return redirect(url_for('login_admin'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT id, title FROM scholarships')
+    scholarships = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template('manage_scholarships.html', scholarships=scholarships)
 
 @app.route('/admin_manage', methods=['GET', 'POST'])
 def admin_manage():
@@ -560,6 +480,88 @@ def admin_manage():
     conn.close()
 
     return render_template('admin_manage.html', admins=admins, backups=backups)
+
+@app.route('/student_manage', methods=['GET', 'POST'])
+def student_manage():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    if request.method == 'POST':
+        action = request.form['action']
+
+        if action == 'delete':
+            selected_students = request.form.getlist('selected_students')
+            if selected_students:
+                for student_id in selected_students:
+                    cur.execute('''
+                        INSERT INTO students_backup (
+                            student_id, student_name, email, student_pass,
+                            registeration_date, grade, GPA, faculty, major_field
+                        )
+                        SELECT student_id, student_name, email, student_pass,
+                               registeration_date, grade, GPA, faculty, major_field
+                        FROM students
+                        WHERE student_id=%s
+                    ''', (student_id,))
+                    cur.execute('DELETE FROM students WHERE student_id=%s', (student_id,))
+
+        elif action == 'insert':
+            student_name = request.form['student_name']
+            email = request.form['email']
+            student_pass = request.form['student_pass']
+            grade = request.form.get('grade')
+            gpa = request.form.get('GPA')
+            faculty = request.form.get('faculty')
+            major_field = request.form.get('major_field')
+
+            cur.execute('''
+                INSERT INTO students (student_name, email, student_pass, grade, GPA, faculty, major_field)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            ''', (student_name, email, student_pass, grade, gpa, faculty, major_field))
+
+        elif action == 'update':
+            selected_students = request.form.getlist('selected_students')
+            if selected_students:
+                student_id = selected_students[0]
+                student_name = request.form['student_name']
+                email = request.form['email']
+                student_pass = request.form['student_pass']
+                grade = request.form.get('grade')
+                gpa = request.form.get('GPA')
+                faculty = request.form.get('faculty')
+                major_field = request.form.get('major_field')
+
+                cur.execute('''
+                    UPDATE students SET student_name=%s, email=%s, student_pass=%s,
+                        grade=%s, GPA=%s, faculty=%s, major_field=%s
+                    WHERE student_id=%s
+                ''', (student_name, email, student_pass, grade, gpa, faculty, major_field, student_id))
+
+        elif action == 'undo':
+            selected_backups = request.form.getlist('selected_backups')
+            for backup_id in selected_backups:
+                cur.execute('''
+                    INSERT INTO students (
+                        student_id, student_name, email, student_pass,
+                        registeration_date, grade, GPA, faculty, major_field
+                    )
+                    SELECT student_id, student_name, email, student_pass,
+                           registeration_date, grade, GPA, faculty, major_field
+                    FROM students_backup WHERE student_id=%s
+                ''', (backup_id,))
+                cur.execute('DELETE FROM students_backup WHERE student_id=%s', (backup_id,))
+
+        conn.commit()
+
+    cur.execute('SELECT * FROM students ORDER BY student_id')
+    students = cur.fetchall()
+    cur.execute('SELECT * FROM students_backup ORDER BY registeration_date DESC')
+    backups = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('student_manage.html', students=students, backups=backups)
 
 @app.route('/logout')
 def logout():

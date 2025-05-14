@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Admin Registration</title>
+      <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          margin: 0;
+        }
+        .card {
+          background: #fff;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          width: 320px;
+          text-align: center;
+        }
+        .card h1 {
+          margin-bottom: 20px;
+          font-size: 28px;
+          color: #333;
+        }
+        .card input {
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 16px;
+        }
+        .card button {
+          width: 100%;
+          padding: 12px;
+          background-color: #007bff;
+          border: none;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 18px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+        .card button:hover {
+          background-color: #0056b3;
+        }
+        .card .home-link {
+          margin-top: 20px;
+          font-size: 14px;
+        }
+        .card .home-link a {
+          color: #007bff;
+          text-decoration: none;
+        }
+        .card .home-link a:hover {
+          text-decoration: underline;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Admin Registration</h1>
+        <form method="post">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <input type="password" name="password" placeholder="Your Password" required>
+          <button type="submit">Register</button>
+        </form>
+        <div class="home-link">
+          <a href="/">← Back to Home</a>
+        </div>
+      </div>
+    </body>
+    </html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ scholarship[0] }} - Apply</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 30px; }
+    .container { max-width: 700px; margin: auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #333; }
+    label { font-weight: bold; display: block; margin-top: 20px; }
+    input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 25px; padding: 12px 20px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+    button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Apply for {{ scholarship[0] }}</h2>
+    <p><strong>Description:</strong> {{ scholarship[1] }}</p>
+    <p><strong>Eligibility:</strong> {{ scholarship[2] }}</p>
+
+    <form method="post">
+      {% for question in questions %}
+        <label>{{ question[1] }}</label>
+        {% if question[2] == 'text' %}
+          <input type="text" name="answers[]" required>
+        {% elif question[2] == 'textarea' %}
+          <textarea name="answers[]" rows="4" required></textarea>
+        {% elif question[2] == 'date' %}
+          <input type="date" name="answers[]" required>
+        {% elif question[2] == 'number' %}
+          <input type="number" name="answers[]" required>
+        {% endif %}
+      {% endfor %}
+
+      <button type="submit">Submit Application</button>
+    </form>
+  </div>
+</body>
+</html>

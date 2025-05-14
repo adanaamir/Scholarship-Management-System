@@ -1,11 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><title>Apply for {{ scholarship_type }}</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>Apply for {{ scholarship[1] }}</title>
+  <style>
+    body { font-family: Arial; padding: 30px; background: #f4f4f4; }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label { display: block; margin: 15px 0 5px; font-weight: bold; }
+    input, textarea, select {
+      width: 100%; padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
 <body>
-<h1>Apply for {{ scholarship_type }}</h1>
-<form method="post">
-    Current GPA: <input type="number" name="gpa" step="0.01" min="0" max="4" required><br><br>
-    <button type="submit">Apply</button>
-</form>
+  <div class="form-container">
+    <h2>Apply for: {{ scholarship[1] }}</h2>
+    <p><strong>Description:</strong> {{ scholarship[2] }}</p>
+    <p><strong>Eligibility:</strong> {{ scholarship[3] }}</p>
+
+    <form method="post">
+      {% for question in questions %}
+        <label>{{ question[2] }}</label>
+
+        {% if question[3] == 'text' %}
+          <input type="text" name="answers[]" required>
+        {% elif question[3] == 'textarea' %}
+          <textarea name="answers[]" rows="4" required></textarea>
+        {% elif question[3] == 'date' %}
+          <input type="date" name="answers[]" required>
+        {% elif question[3] == 'number' %}
+          <input type="number" name="answers[]" required>
+        {% else %}
+          <input type="text" name="answers[]" required>
+        {% endif %}
+      {% endfor %}
+
+      <button type="submit">Submit Application</button>
+    </form>
+  </div>
 </body>
 </html>
