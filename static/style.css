@@ -123,8 +123,8 @@ label {
     padding: 20px;
     padding-top: 0px;
     margin-left: 880px;
-    position: fixed;  
-    top: 40px; 
+    position: relative; /* or just remove position entirely */
+    top: -60px
 }
 
 .sidebar{
@@ -190,7 +190,7 @@ label {
 .profileImage{
     display: flex;
     align-items: center;
-    margin-top: 50px;
+    margin-top: -10px;
     margin-left: 70px;
     width: 400px;
     padding: 20px;
