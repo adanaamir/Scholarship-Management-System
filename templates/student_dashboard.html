@@ -126,8 +126,6 @@
     <ul>
       <li><a href="/student_dashboard">Home</a></li>
       <li><a href="#">Profile</a></li>
-      <li><a href="/scholarship_status">View Application</a></li>
-      <li><a href="#">Settings</a></li>
       <li><a href="/logout">Logout</a></li>
     </ul>
   </div>
@@ -141,7 +139,6 @@
 
       <!-- Profile Card -->
       <div class="card profile-card">
-        <img src="{{ url_for('static', filename='images/download.jpg') }}" alt="Profile Picture" class="profile-pic">
         <h2>{{ email }}</h2>
         <p>ID: {{ session['student_id'] }}</p>
       </div>
@@ -149,30 +146,43 @@
       <!-- Scholarship Status Card -->
       <div class="card sc-status">
         <h2>Scholarship Status</h2>
-        <h3>{{ scholarship_status }}</h3>
-        {% if review_letter %}
+        {% if applications %}
+        {% for app in applications %}
+        <h3>Scholarship: {{ app[5] }}</h3>
+        <p>Status: {{ app[1] }}</p>
+        {% if app[2] %}
         <div class="review-letter">
           <strong>Review Letter:</strong>
-          <p>{{ review_letter }}</p>
+          <p>{{ app[2] }}</p>
         </div>
+        {% else %}
+        <p>No review letter available yet.</p>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <p>You have not applied for any scholarships yet.</p>
         {% endif %}
       </div>
+
 
       <!-- Announcements Card -->
       <div class="card announce">
         <h2>Announcements</h2>
-        <p><a href="javascript:void(0)" onclick="showScholarshipDetails()">New Scholarship Open! Click to View</a></p>
-        <div id="merit-scholarship" style="display:none; margin-top:15px;">
-          <h3>Merit-Based Scholarship</h3>
-          <p><a href="/scholarship_form">Click here to apply</a></p>
-        </div>
+        {% if scholarships %}
+        {% for sc in scholarships %}
+          <p><a href="/apply/{{ sc[0] }}">{{ sc[1] }}</a></p>
+        {% endfor %}
+        {% else %}
+          <p>No scholarships available at the moment.</p>
+        {% endif %}
       </div>
 
-      <!-- Financial Aid Card -->
+
+      <!-- Financial Aid Card
       <div class="card financial-aid">
         <h2>Financial Aid</h2>
         <p>If you need financial assistance, please <a href="#">click here</a> to apply.</p>
-      </div>
+      </div> -->
 
     </div>
   </div>
