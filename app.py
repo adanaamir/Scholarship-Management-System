@@ -20,7 +20,7 @@ def get_db_connection():
 # Home, Registration, Login (unchanged) for commit
 # ----------------------
 #please ho jao
-=======
+
 
 @app.route('/')
 def home():
@@ -282,7 +282,6 @@ def register_admin():
     </html>
     '''
 
-=======
 ##
 @app.route('/login_student', methods=['GET', 'POST'])
 def login_student():
@@ -360,9 +359,9 @@ def admin_review():
     conn.close()
 
     return render_template('admin_review.html', applications=applications)
+  
 @app.route('/create_form', methods=['GET', 'POST'])
 def create_form():
-
     if request.method == 'POST':
         title = request.form['scholarship_title']
         description = request.form['scholarship_description']
@@ -395,7 +394,6 @@ def create_form():
 
     return render_template('create_form.html')
 
-=======
 ##
 @app.route('/scholarship_form', methods=['GET', 'POST'])
 def scholarship_form():
@@ -695,7 +693,7 @@ def create_form():
 
     return redirect(url_for('admin_review'))
 
-
+##CRUD FUNCTIONS
 @app.route('/admin_manage', methods=['GET', 'POST'])
 def admin_manage():
     conn = get_db_connection()
@@ -727,8 +725,9 @@ def admin_manage():
             password = request.form['password']
 
             # Insert the new admin into the database
-            cur.execute('INSERT INTO admin (name, email, password, created_at) VALUES (%s, %s, %s, %s)',
-                        (name, email, password, datetime.now().date()))
+            cur.execute("""
+                        SELECT insert_admin (%s, %s, %s, %s)
+                        """, (name, email, password))
         
         # Handle "Update" action (update selected admin)
         elif action == 'update':
@@ -738,24 +737,23 @@ def admin_manage():
               name = request.form['name']
               email = request.form['email']
               password = request.form['password']
-              cur.execute('UPDATE admin SET name=%s, email=%s, password=%s WHERE admin_id=%s',
-                          (name, email, password, admin_id))
+              cur.execute("""
+                          CALL update_admin (%s, %s, %s, %s)
+                          """, (name, email, password, admin_id))
               conn.commit()
 
 
         # Handle "Undo" action (restore deleted admin)
         elif action == 'undo':
-            # Get the latest deleted admin(s) from admin_backup to restore
             selected_backups = request.form.getlist('selected_backups')
             for backup_id in selected_backups:
-                # Restore from backup
-                cur.execute('''
+              #UPDATE THIS
+                cur.execute('''   
                     INSERT INTO admin (admin_id, name, email, password, created_at) 
                     SELECT id, name, email, password, NOW() 
                     FROM admin_backup 
                     WHERE id = %s
                 ''', (backup_id,))
-                # Delete from backup (undo the delete)
                 cur.execute('DELETE FROM admin_backup WHERE id = %s', (backup_id,))
 
 
@@ -776,7 +774,6 @@ def admin_manage():
 def logout():
     session.clear()
     return redirect(url_for('home'))
-=======
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 if __name__ == "__main__":
