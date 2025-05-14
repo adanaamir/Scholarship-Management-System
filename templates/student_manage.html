@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .action-buttons { margin-bottom: 20px; }
+        .action-buttons button { margin-right: 10px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        input[type="checkbox"] { margin-right: 10px; }
+        .disabled { background-color: #ccc; cursor: not-allowed; }
+        #updateForm, #insertForm { margin-top: 30px; display: none; }
+        #updateForm input, #insertForm input { display: block; margin-bottom: 10px; padding: 8px; width: 300px; }
+    </style>
+</head>
+<body>
+    <a href="/student_dashboard">&larr; Back to Student Dashboard</a>
+    <h1>Student Management</h1>
+
+    <form method="POST" action="/student_manage">
+        <div class="action-buttons">
+            <button type="submit" name="action" value="delete" id="deleteButton" class="disabled" disabled>Delete</button>
+            <button type="submit" name="action" value="insert">Insert</button>
+            <button type="button" id="updateButton" class="disabled" disabled>Update</button>
+            <button type="submit" name="action" value="undo" id="undoButton" class="disabled" disabled>Undo Delete</button>
+        </div>
+
+        <h3>Current Students</h3>
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll"></th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Grade</th>
+                    <th>GPA</th>
+                    <th>Faculty</th>
+                    <th>Major</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_students" value="{{ student.student_id }}" 
+                            data-name="{{ student.student_name }}" 
+                            data-email="{{ student.email }}" 
+                            data-pass="{{ student.student_pass }}" 
+                            data-grade="{{ student.grade }}" 
+                            data-gpa="{{ student.GPA }}" 
+                            data-faculty="{{ student.faculty }}" 
+                            data-major="{{ student.major_field }}"></td>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.student_name }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.grade }}</td>
+                        <td>{{ student.GPA }}</td>
+                        <td>{{ student.faculty }}</td>
+                        <td>{{ student.major_field }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3>Deleted Students (Backup)</h3>
+        <table id="backupTable">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectBackupAll"></th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in backups %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_backups" value="{{ b.student_id }}"></td>
+                        <td>{{ b.student_id }}</td>
+                        <td>{{ b.student_name }}</td>
+                        <td>{{ b.email }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+    <!-- Update Form -->
+    <form method="POST" action="/student_manage" id="updateForm">
+        <h3>Update Student</h3>
+        <input type="hidden" name="action" value="update">
+        <input type="hidden" name="selected_students" id="updateStudentId">
+        <label>Name: <input type="text" name="student_name" id="updateName" required></label>
+        <label>Email: <input type="email" name="email" id="updateEmail" required></label>
+        <label>Password: <input type="password" name="student_pass" id="updatePass" required></label>
+        <label>Grade: <input type="text" name="grade" id="updateGrade"></label>
+        <label>GPA: <input type="text" name="GPA" id="updateGPA"></label>
+        <label>Faculty: <input type="text" name="faculty" id="updateFaculty"></label>
+        <label>Major: <input type="text" name="major_field" id="updateMajor"></label>
+        <button type="submit">Submit Update</button>
+    </form>
+
+    <!-- Insert Form -->
+    <form method="POST" action="/student_manage" id="insertForm" style="display: none;">
+        <h3>Insert New Student</h3>
+        <input type="hidden" name="action" value="insert">
+        <label>Name: <input type="text" name="student_name" required></label>
+        <label>Email: <input type="email" name="email" required></label>
+        <label>Password: <input type="password" name="student_pass" required></label>
+        <label>Grade: <input type="text" name="grade"></label>
+        <label>GPA: <input type="text" name="GPA"></label>
+        <label>Faculty: <input type="text" name="faculty"></label>
+        <label>Major: <input type="text" name="major_field"></label>
+        <button type="submit">Add Student</button>
+    </form>
+
+    <script>
+        document.getElementById("selectAll").addEventListener("click", function () {
+            const checkboxes = document.querySelectorAll('input[name="selected_students"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            toggleActionButtons();
+        });
+
+        document.getElementById("selectBackupAll").addEventListener("click", function () {
+            const checkboxes = document.querySelectorAll('input[name="selected_backups"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            toggleActionButtons();
+        });
+
+        function toggleActionButtons() {
+            const selectedStudents = document.querySelectorAll('input[name="selected_students"]:checked');
+            const selectedBackups = document.querySelectorAll('input[name="selected_backups"]:checked');
+
+            document.getElementById("deleteButton").disabled = selectedStudents.length === 0;
+            document.getElementById("deleteButton").classList.toggle("disabled", selectedStudents.length === 0);
+
+            document.getElementById("updateButton").disabled = selectedStudents.length !== 1;
+            document.getElementById("updateButton").classList.toggle("disabled", selectedStudents.length !== 1);
+
+            document.getElementById("undoButton").disabled = selectedBackups.length === 0;
+            document.getElementById("undoButton").classList.toggle("disabled", selectedBackups.length === 0);
+        }
+
+        const checkboxes = document.querySelectorAll('input[name="selected_students"], input[name="selected_backups"]');
+        checkboxes.forEach(cb => cb.addEventListener('change', toggleActionButtons));
+
+        document.getElementById("updateButton").addEventListener("click", function () {
+            const selected = document.querySelector('input[name="selected_students"]:checked');
+            if (selected) {
+                document.getElementById("updateStudentId").value = selected.value;
+                document.getElementById("updateName").value = selected.dataset.name;
+                document.getElementById("updateEmail").value = selected.dataset.email;
+                document.getElementById("updatePass").value = selected.dataset.pass;
+                document.getElementById("updateGrade").value = selected.dataset.grade;
+                document.getElementById("updateGPA").value = selected.dataset.gpa;
+                document.getElementById("updateFaculty").value = selected.dataset.faculty;
+                document.getElementById("updateMajor").value = selected.dataset.major;
+                document.getElementById("updateForm").style.display = "block";
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        });
+
+        document.querySelector('button[name="action"][value="insert"]').addEventListener("click", function (event) {
+            event.preventDefault();
+            const form = document.getElementById("insertForm");
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
